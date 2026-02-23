@@ -1,0 +1,7 @@
+Feb 23 10:02:11 sshd[2048]: Invalid user ubuntu from 45.83.64.12
+Feb 23 10:02:14 sshd[2048]: Invalid user administrator from 45.83.64.12
+Feb 23 10:02:18 sshd[2048]: Invalid user mysql from 45.83.64.12
+Feb 23 10:02:21 sshd[2048]: Invalid user backup from 45.83.64.12
+Feb 23 10:02:25 sshd[2048]: Invalid user user from 45.83.64.12
+Feb 23 10:02:29 sshd[2048]: Invalid user support from 45.83.64.12
+Feb 23 10:02:33 sshd[2048]: Invalid user ftp from 45.83.64.12

@@ -1,0 +1,3 @@
+Feb 23 08:11:02 sshd[811]: Accepted publickey for joshua from 192.168.1.10 port 52111
+Feb 23 08:45:14 sshd[900]: Accepted publickey for joshua from 192.168.1.10 port 52122
+Feb 23 09:12:33 sshd[1044]: Disconnected from 192.168.1.10
