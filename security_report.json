@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-23T16:17:36.357207",
+    "log_path": "C:\\Users\\joshu\\log-analyzer\\auth.log",
+    "year_assumed": 2026,
+    "bruteforce_threshold": 10,
+    "window_minutes": 5,
+    "total_lines_read": 4,
+    "parsed_security_events": 4
+  },
+  "event_counts": {
+    "failed_password": 2,
+    "invalid_user": 1,
+    "accepted": 1,
+    "disconnect": 0
+  },
+  "top_ips": [
+    {
+      "ip": "192.168.1.50",
+      "failed_attempts": 2,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T10:15:42",
+      "last_seen": "2026-02-23T10:15:45",
+      "usernames": [
+        "admin",
+        "root"
+      ]
+    },
+    {
+      "ip": "10.0.0.5",
+      "failed_attempts": 0,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 1,
+      "first_seen": "2026-02-23T10:16:01",
+      "last_seen": "2026-02-23T10:16:01",
+      "usernames": [
+        "test"
+      ]
+    },
+    {
+      "ip": "192.168.1.10",
+      "failed_attempts": 0,
+      "accepted_logins": 1,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T10:15:48",
+      "last_seen": "2026-02-23T10:15:48",
+      "usernames": [
+        "joshua"
+      ]
+    }
+  ],
+  "findings": []
+}
