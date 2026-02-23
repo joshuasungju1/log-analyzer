@@ -157,6 +157,8 @@ def iso(ts: Optional[dt.datetime]) -> Optional[str]:
     return ts.isoformat() if ts else None
 
 
+
+
 # Core Analysis Engine
 def analyze_auth_log(
     log_path: str,
@@ -174,7 +176,23 @@ def analyze_auth_log(
 
     # Fail fast if log file is missing (good UX)
     if not os.path.exists(log_path):
-        raise FileNotFoundError(f"Log file not found: {log_path}")
+        raise FileNotFoundError(f"Log path not found: {log_path}")
+    
+    # If a directory is provided, analyze all files inside
+    log_files = []
+
+    if os.path.isdir(log_path):
+        for name in os.listdir(log_path):
+            full_path = os.path.join(log_path, name)
+
+            # Only analyze actual files (skip subfolders)
+            if os.path.isfile(full_path):
+                log_files.append(full_path)
+
+        if not log_files:
+            raise ValueError("Log directory contains no files.")
+    else:
+        log_files.append(log_path)
 
     # Per-IP aggregation structure
     ip_stats: Dict[str, IPStats] = {}
@@ -196,47 +214,48 @@ def analyze_auth_log(
     suspicious_ips = set()
     now = dt.datetime.now()
 
-    with open(log_path, "r", errors="ignore") as f:
-        for line in f:
-            total_lines += 1
+    for file_path in log_files:
+        with open(file_path, "r", errors="ignore") as f:
+            for line in f:
+                total_lines += 1
 
-            # Attempt timestamp reconstruction
-            ts = parse_syslog_timestamp(line, year)
+                # Attempt timestamp reconstruction
+                ts = parse_syslog_timestamp(line, year)
 
-            # Failed Password Detection
-            m = FAILED_PASSWORD_RE.search(line)
-            if m:
-                parsed_events += 1
-                events["failed_password"] += 1
+                # Failed Password Detection
+                m = FAILED_PASSWORD_RE.search(line)
+                if m:
+                    parsed_events += 1
+                    events["failed_password"] += 1
 
-                ip = m.group("ip")
-                user = m.group("user")
+                    ip = m.group("ip")
+                    user = m.group("user")
 
-                if safe_ip(ip):
-                    st = ip_stats.setdefault(ip, IPStats(ip=ip))
-                    st.failed_attempts += 1
+                    if safe_ip(ip):
+                        st = ip_stats.setdefault(ip, IPStats(ip=ip))
+                        st.failed_attempts += 1
 
-                    if user and user not in st.usernames:
-                        st.usernames.append(user)
+                        if user and user not in st.usernames:
+                            st.usernames.append(user)
 
-                    if ts:
-                        st.first_seen = st.first_seen or iso(ts)
-                        st.last_seen = iso(ts)
+                        if ts:
+                            st.first_seen = st.first_seen or iso(ts)
+                            st.last_seen = iso(ts)
 
-                        # Sliding window logic:
-                        # Remove old failures outside detection window
-                        dq = ip_fail_windows[ip]
-                        dq.append(ts)
+                            # Sliding window logic:
+                            # Remove old failures outside detection window
+                            dq = ip_fail_windows[ip]
+                            dq.append(ts)
 
-                        cutoff = ts - dt.timedelta(minutes=window_minutes)
-                        while dq and dq[0] < cutoff:
-                            dq.popleft()
+                            cutoff = ts - dt.timedelta(minutes=window_minutes)
+                            while dq and dq[0] < cutoff:
+                                dq.popleft()
 
-                        # Brute-force heuristic trigger
-                        if len(dq) >= brute_force_threshold:
-                            suspicious_ips.add(ip)
+                            # Brute-force heuristic trigger
+                            if len(dq) >= brute_force_threshold:
+                                suspicious_ips.add(ip)
 
-                continue
+                    continue
 
             # Invalid User Detection
             m = INVALID_USER_RE.search(line)
@@ -322,6 +341,10 @@ def analyze_auth_log(
     }
 
 
+
+
+
+
 # CLI Entry Point
 def main():
     """
@@ -351,6 +374,8 @@ def main():
         json.dump(report, f, indent=2)
 
     print(f"[+] Report written to: {args.out}")
+
+    
 
 
 if __name__ == "__main__":
