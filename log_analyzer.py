@@ -36,7 +36,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, asdict
 
 # Type hints improve maintainability & readability
-from typing import Deque, Dict, List, Optional, Tuple
+from typing import Deque, Dict, List, Optional
 
 
 # Regular Expressions (Log Pattern Definitions)
@@ -194,6 +194,8 @@ def analyze_auth_log(
     else:
         log_files.append(log_path)
 
+    log_files.sort()
+
     # Per-IP aggregation structure
     ip_stats: Dict[str, IPStats] = {}
 
@@ -217,12 +219,11 @@ def analyze_auth_log(
     for file_path in log_files:
         with open(file_path, "r", errors="ignore") as f:
             for line in f:
-                total_lines += 1
 
-                # Attempt timestamp reconstruction
+                total_lines += 1
                 ts = parse_syslog_timestamp(line, year)
 
-                # Failed Password Detection
+                # Failed Password
                 m = FAILED_PASSWORD_RE.search(line)
                 if m:
                     parsed_events += 1
@@ -242,8 +243,6 @@ def analyze_auth_log(
                             st.first_seen = st.first_seen or iso(ts)
                             st.last_seen = iso(ts)
 
-                            # Sliding window logic:
-                            # Remove old failures outside detection window
                             dq = ip_fail_windows[ip]
                             dq.append(ts)
 
@@ -251,62 +250,69 @@ def analyze_auth_log(
                             while dq and dq[0] < cutoff:
                                 dq.popleft()
 
-                            # Brute-force heuristic trigger
                             if len(dq) >= brute_force_threshold:
                                 suspicious_ips.add(ip)
 
                     continue
 
-            # Invalid User Detection
-            m = INVALID_USER_RE.search(line)
-            if m:
-                parsed_events += 1
-                events["invalid_user"] += 1
+                # Invalid User
+                m = INVALID_USER_RE.search(line)
+                if m:
+                    parsed_events += 1
+                    events["invalid_user"] += 1
 
-                ip = m.group("ip")
-                user = m.group("user")
+                    ip = m.group("ip")
+                    user = m.group("user")
 
-                if safe_ip(ip):
-                    st = ip_stats.setdefault(ip, IPStats(ip=ip))
-                    st.invalid_user_attempts += 1
+                    if safe_ip(ip):
+                        st = ip_stats.setdefault(ip, IPStats(ip=ip))
+                        st.invalid_user_attempts += 1
 
-                    if user and user not in st.usernames:
-                        st.usernames.append(user)
+                        if user and user not in st.usernames:
+                            st.usernames.append(user)
 
-                    if ts:
-                        st.first_seen = st.first_seen or iso(ts)
-                        st.last_seen = iso(ts)
+                        if ts:
+                            st.first_seen = st.first_seen or iso(ts)
+                            st.last_seen = iso(ts)
 
-                continue
+                    continue
 
-            # Successful Login Detection
-            m = ACCEPTED_RE.search(line)
-            if m:
-                parsed_events += 1
-                events["accepted"] += 1
+                # Accepted Login
+                m = ACCEPTED_RE.search(line)
+                if m:
+                    parsed_events += 1
+                    events["accepted"] += 1
 
-                ip = m.group("ip")
-                user = m.group("user")
+                    ip = m.group("ip")
+                    user = m.group("user")
 
-                if safe_ip(ip):
-                    st = ip_stats.setdefault(ip, IPStats(ip=ip))
-                    st.accepted_logins += 1
+                    if safe_ip(ip):
+                        st = ip_stats.setdefault(ip, IPStats(ip=ip))
+                        st.accepted_logins += 1
 
-                    if user and user not in st.usernames:
-                        st.usernames.append(user)
+                        if user and user not in st.usernames:
+                            st.usernames.append(user)
 
-                    if ts:
-                        st.first_seen = st.first_seen or iso(ts)
-                        st.last_seen = iso(ts)
+                        if ts:
+                            st.first_seen = st.first_seen or iso(ts)
+                            st.last_seen = iso(ts)
 
-                continue
+                    continue
 
-            # Disconnect Events
-            m = DISCONNECT_RE.search(line)
-            if m:
-                parsed_events += 1
-                events["disconnect"] += 1
-                continue
+                # Disconnect
+                m = DISCONNECT_RE.search(line)
+                if m:
+                    parsed_events += 1
+                    events["disconnect"] += 1
+
+                    ip = m.group("ip")
+                    if safe_ip(ip):
+                        st = ip_stats.setdefault(ip, IPStats(ip=ip))
+                        if ts:
+                            st.first_seen = st.first_seen or iso(ts)
+                            st.last_seen = iso(ts)
+
+                    continue
 
     # Rank noisy IPs for analyst visibility
     ranked = sorted(
@@ -332,6 +338,8 @@ def analyze_auth_log(
         "metadata": {
             "generated_at": now.isoformat(),
             "log_path": os.path.abspath(log_path),
+            "files_analyzed": len(log_files),
+            "files": [os.path.abspath(p) for p in log_files],
             "total_lines_read": total_lines,
             "parsed_security_events": parsed_events
         },
@@ -355,7 +363,7 @@ def main():
 
     ap = argparse.ArgumentParser(description="Analyze Linux auth.log for suspicious SSH patterns.")
 
-    ap.add_argument("--log", default="/var/log/auth.log", help="Path to auth log")
+    ap.add_argument("--log", default="/var/log/auth.log", help="Path to auth log file OR folder of logs")
     ap.add_argument("--year", type=int, default=dt.datetime.now().year)
     ap.add_argument("--threshold", type=int, default=10)
     ap.add_argument("--window", type=int, default=5)
