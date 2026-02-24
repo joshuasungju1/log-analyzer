@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-23T17:19:38.620884",
+    "log_path": "C:\\Users\\joshu\\log-analyzer\\logs",
+    "files_analyzed": 6,
+    "files": [
+      "C:\\Users\\joshu\\log-analyzer\\logs\\auth_bruteforce.log",
+      "C:\\Users\\joshu\\log-analyzer\\logs\\auth_distributed_attack.log",
+      "C:\\Users\\joshu\\log-analyzer\\logs\\auth_enumeration.log",
+      "C:\\Users\\joshu\\log-analyzer\\logs\\auth_normal.log",
+      "C:\\Users\\joshu\\log-analyzer\\logs\\auth_suspicious_success.log",
+      "C:\\Users\\joshu\\log-analyzer\\logs\\auth_test.log"
+    ],
+    "total_lines_read": 34,
+    "parsed_security_events": 34
+  },
+  "event_counts": {
+    "failed_password": 20,
+    "invalid_user": 8,
+    "accepted": 4,
+    "disconnect": 2
+  },
+  "top_ips": [
+    {
+      "ip": "185.220.101.4",
+      "failed_attempts": 10,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T09:14:01",
+      "last_seen": "2026-02-23T09:14:24",
+      "usernames": [
+        "admin",
+        "root",
+        "test",
+        "guest",
+        "oracle",
+        "postgres"
+      ]
+    },
+    {
+      "ip": "103.145.13.88",
+      "failed_attempts": 3,
+      "accepted_logins": 1,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T11:33:41",
+      "last_seen": "2026-02-23T11:34:02",
+      "usernames": [
+        "root"
+      ]
+    },
+    {
+      "ip": "192.168.1.50",
+      "failed_attempts": 2,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T10:15:42",
+      "last_seen": "2026-02-23T10:15:45",
+      "usernames": [
+        "admin",
+        "root"
+      ]
+    },
+    {
+      "ip": "91.210.45.77",
+      "failed_attempts": 1,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T12:01:01",
+      "last_seen": "2026-02-23T12:01:01",
+      "usernames": [
+        "root"
+      ]
+    },
+    {
+      "ip": "172.105.33.91",
+      "failed_attempts": 1,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T12:01:03",
+      "last_seen": "2026-02-23T12:01:03",
+      "usernames": [
+        "root"
+      ]
+    },
+    {
+      "ip": "203.0.113.55",
+      "failed_attempts": 1,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T12:01:05",
+      "last_seen": "2026-02-23T12:01:05",
+      "usernames": [
+        "root"
+      ]
+    },
+    {
+      "ip": "198.51.100.23",
+      "failed_attempts": 1,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T12:01:07",
+      "last_seen": "2026-02-23T12:01:07",
+      "usernames": [
+        "root"
+      ]
+    },
+    {
+      "ip": "45.129.14.22",
+      "failed_attempts": 1,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T12:01:09",
+      "last_seen": "2026-02-23T12:01:09",
+      "usernames": [
+        "root"
+      ]
+    },
+    {
+      "ip": "45.83.64.12",
+      "failed_attempts": 0,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 7,
+      "first_seen": "2026-02-23T10:02:11",
+      "last_seen": "2026-02-23T10:02:33",
+      "usernames": [
+        "ubuntu",
+        "administrator",
+        "mysql",
+        "backup",
+        "user",
+        "support",
+        "ftp"
+      ]
+    },
+    {
+      "ip": "10.0.0.5",
+      "failed_attempts": 0,
+      "accepted_logins": 0,
+      "invalid_user_attempts": 1,
+      "first_seen": "2026-02-23T10:16:01",
+      "last_seen": "2026-02-23T10:16:01",
+      "usernames": [
+        "test"
+      ]
+    },
+    {
+      "ip": "192.168.1.10",
+      "failed_attempts": 0,
+      "accepted_logins": 3,
+      "invalid_user_attempts": 0,
+      "first_seen": "2026-02-23T08:11:02",
+      "last_seen": "2026-02-23T10:15:48",
+      "usernames": [
+        "joshua"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "type": "possible_bruteforce",
+      "ip": "185.220.101.4",
+      "total_failed_attempts": 10,
+      "observed_usernames": [
+        "admin",
+        "root",
+        "test",
+        "guest",
+        "oracle",
+        "postgres"
+      ]
+    }
+  ]
+}
